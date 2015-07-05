@@ -6,7 +6,21 @@ testDetectWithConfFileDetectsLwanApp() {
   mkdir -p ${BUILD_DIR}/conf
   touch ${BUILD_DIR}/conf/lwan.conf
   detect
-  
+
   assertAppDetected "Lwan!"
+}
+
+testDetectWithDirDoesNotDetectsLwanApp() {
+  mkdir -p ${BUILD_DIR}/conf/lwan.conf
+  detect
+
+  assertNoAppDetected
+}
+
+testNoConfFileDoesNotDetectLwanApp() {
+  mkdir -p ${BUILD_DIR}/conf
+  detect
+
+  assertNoAppDetected
 }
 
