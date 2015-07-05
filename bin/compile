@@ -94,8 +94,8 @@ if ! test -d $cache_dir/lwan || ! test -f $cache_dir/lwan/.heroku/lwan-version |
   info "Downloading lwan $lwan_version..."
   git clone $lwan_url $lwan_src_dir
   cd $lwan_src_dir
-  mkdir -p $lwan_src_dir
-  cd $lwan_src_dir
+  #mkdir -p $lwan_src_dir
+  #cd $lwan_src_dir
 
   head "Compiling lwan..."
   head "CMAKE Configuring"
