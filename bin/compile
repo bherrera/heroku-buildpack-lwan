@@ -1,0 +1,148 @@
+#!/usr/bin/env bash
+
+####### Configure environment
+
+set -e            # fail fast
+set -o pipefail   # don't ignore exit codes when piping output
+# set -x          # enable debugging
+
+# Configure directories
+build_dir=$1
+cache_dir=$2
+env_dir=$3
+bp_dir=$(cd $(dirname $0); cd ..; pwd)
+heroku_dir=$build_dir/.heroku
+mkdir -p $heroku_dir/lwan
+warnings=$(mktemp)
+
+# Load some convenience functions like info(), echo(), and indent()
+source $bp_dir/bin/common.sh
+# source $bp_dir/bin/warnings.sh
+
+# Avoid GIT_DIR leak from previous build steps
+unset GIT_DIR
+
+# Provide hook to deal with errors
+trap build_failed ERR
+
+
+if [ -f $build_dir/_lwan.cfg ]; then
+  source $build_dir/_lwan.cfg
+fi
+
+if [ $LWAN_VERSION ] && [ ! $lwan_version ]; then
+  lwan_version=$LWAN_VERSION
+fi
+
+# Recommend using semver ranges in a safe manner
+if [ ! $lwan_version ]; then
+  protip "You can specify a lwan version in _lwan.cfg"
+  lwan_version=""
+elif [ "$lwan_version" == "*" ]; then
+  protip "Avoid using ranges like '*' in _lwan.cfg"
+  lwan_version=""
+elif [ ${lwan_version:0:1} == ">" ]; then
+  protip "Avoid using ranges starting with '>' in _lwan.cfg"
+  lwan_version=""
+fi
+
+# Output info about requested version and resolved lwan version
+if [ "$lwan_version" == "" ]; then
+  lwan_version="master"
+  lwan_url="https://github.com/lpereira/lwan"
+  info "Defaulting to version master"
+# elif [ "$lwan_version" == "mainline" ]; then
+#   lwan_version="mainline"
+#   lwan_url="http://lwan.org/download/lwan-1.7.9.tar.gz"
+#   info "Requested lwan version: mainline - $lwan_version"
+# elif [ "$lwan_version" == "stable" ]; then
+#   lwan_version="stable"
+#   lwan_url="http://lwan.org/download/lwan-1.7.9.tar.gz"
+#   info "Requested lwan version: mainline - $lwan_version"
+else
+  #lwan_url="http://lwan.org/download/lwan-$lwan_version.tar.gz"
+  #info "Requested lwan version: $lwan_version"
+fi
+
+# Load config vars into environment; start with defaults
+export LWAN_VERSION=$lwan_version
+export_env_dir $env_dir
+
+lwan_src_dir="lwan-$lwan_version"
+
+bin_dir=$build_dir/vendor/lwan
+
+mkdir -p "$bin_dir"
+
+# [ "$lwan" == "mainline" ] || [ "$lwan" == "stable" ]
+if ! test -d $cache_dir/lwan || ! test -f $cache_dir/lwan/.heroku/lwan-version || [ $(cat $cache_dir/lwan/.heroku/lwan-version) != "$lwan_version" ]; then
+  info "lwan version changed since last build; rebuilding."
+
+  # Persist goodies like lwan-version in the slug
+  mkdir -p $build_dir/.heroku
+
+  # Save resolved lwan version in the slug for later reference
+  echo $lwan_version > $build_dir/.heroku/lwan-version
+
+  # Purge lwan-related cached content, being careful not to purge the top-level
+  # cache, for the sake of heroku-buildpack-multi apps.
+  info "Cleaning cached lwan version..."
+  rm -rf $cache_dir/lwan
+
+  info "Downloading lwan $lwan_version..."
+  git clone $lwan_url $lwan_src_dir
+  cd "$build_dir"
+  cd $lwan_src_dir
+  mkdir -p $lwan_src_dir/build
+  cd $lwan_src_dir/build
+
+  head "Compiling lwan..."
+  head "CMAKE Configuring"
+  cmake .. -DCMAKE_BUILD_TYPE=Release | indent
+  head "Compiling with Make"
+  make 2>&1 | indent
+  #head "Moving generated binary"
+  #mkdir -p "$bin_dir/bin"
+  #mv objs/lwan "$bin_dir/bin"
+
+  #info "lwan was Installed at: $bin_dir"
+
+  #info "Cleaning up lwan source files..."
+  #cd ..
+  #rm -rf $lwan_src_dir
+
+  #info "Caching lwan binaries..."
+  #cp -R "$bin_dir" "$cache_dir"
+  ## Copy goodies to the cache
+  #cp -r $build_dir/.heroku $cache_dir/lwan
+
+else
+  info "Using cached lwan $lwan_version..."
+  cp -R "$cache_dir/lwan" "$build_dir/vendor"
+fi
+
+# build a startup script
+#echo -n "-----> Creating startup script... "
+#mkdir "$build_dir/bin"
+#cat <<EOF >"$build_dir/bin/start_lwan"
+##!/usr/bin/env bash
+#erb conf/lwan.conf.erb > conf/lwan.conf
+#mkdir -p logs
+#touch logs/access.log logs/error.log
+#(tail -qF -n 0 --pid=\$\$ logs/*.log &)
+#exec lwan -p .
+#EOF
+#chmod +x "$build_dir/bin/start_lwan"
+#echo "done"
+
+#if [[ ! -f $build_dir/Procfile ]]; then
+#  echo -n "-----> Creating Procfile... "
+#  echo "web: bin/start_lwan" > $build_dir/Procfile
+#  chmod +x "$build_dir/Procfile"
+#  echo "done"
+#fi
+
+# Update the PATH
+#info "Building runtime environment"
+#mkdir -p $build_dir/.profile.d
+#echo "export PATH=\"\$HOME/vendor/lwan/bin:\$PATH\";" > $build_dir/.profile.d/lwan.sh
