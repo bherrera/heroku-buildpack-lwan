@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # bin/detect <build-dir>
 
-if [ -f $1/conf/lwan.conf]; then
+if [ -f $1/conf/lwan.conf ]; then
   echo "Lwan" && exit 0
 else
   echo "no" && exit 1
