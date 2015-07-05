@@ -62,7 +62,7 @@ if [ "$lwan_version" == "" ]; then
 #   info "Requested lwan version: mainline - $lwan_version"
 else
   #lwan_url="http://lwan.org/download/lwan-$lwan_version.tar.gz"
-  #info "Requested lwan version: $lwan_version"
+  info "Requested lwan version: $lwan_version"
 fi
 
 # Load config vars into environment; start with defaults
