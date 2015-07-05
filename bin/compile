@@ -90,21 +90,21 @@ if ! test -d $cache_dir/lwan || ! test -f $cache_dir/lwan/.heroku/lwan-version |
   info "Cleaning cached lwan version..."
   rm -rf $cache_dir/lwan
 
+  cd "$build_dir"
   info "Downloading lwan $lwan_version..."
   git clone $lwan_url $lwan_src_dir
-  cd "$build_dir"
   cd $lwan_src_dir
-  mkdir -p $lwan_src_dir/build
-  cd $lwan_src_dir/build
+  mkdir -p $lwan_src_dir
+  cd $lwan_src_dir
 
   head "Compiling lwan..."
   head "CMAKE Configuring"
-  cmake .. -DCMAKE_BUILD_TYPE=Release | indent
+  cmake -DCMAKE_BUILD_TYPE=Release | indent
   head "Compiling with Make"
   make 2>&1 | indent
   head "Moving generated binary"
   mkdir -p "$bin_dir/bin"
-  mv $lwan_src_dir/build/lwan "$bin_dir/bin"
+  mv $lwan_src_dir/lwan "$bin_dir/bin"
 
   info "lwan was Installed at: $bin_dir"
 
