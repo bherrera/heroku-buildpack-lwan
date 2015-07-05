@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# bin/compile <build-dir> <cache-dir> <env-dir>
 
 ####### Configure environment
 
@@ -101,20 +102,20 @@ if ! test -d $cache_dir/lwan || ! test -f $cache_dir/lwan/.heroku/lwan-version |
   cmake .. -DCMAKE_BUILD_TYPE=Release | indent
   head "Compiling with Make"
   make 2>&1 | indent
-  #head "Moving generated binary"
-  #mkdir -p "$bin_dir/bin"
-  #mv objs/lwan "$bin_dir/bin"
+  head "Moving generated binary"
+  mkdir -p "$bin_dir/bin"
+  mv $lwan_src_dir/build/lwan "$bin_dir/bin"
 
-  #info "lwan was Installed at: $bin_dir"
+  info "lwan was Installed at: $bin_dir"
 
-  #info "Cleaning up lwan source files..."
-  #cd ..
-  #rm -rf $lwan_src_dir
+  info "Cleaning up lwan source files..."
+  cd "$build_dir"
+  rm -rf $lwan_src_dir
 
-  #info "Caching lwan binaries..."
-  #cp -R "$bin_dir" "$cache_dir"
-  ## Copy goodies to the cache
-  #cp -r $build_dir/.heroku $cache_dir/lwan
+  info "Caching lwan binaries..."
+  cp -R "$bin_dir" "$cache_dir"
+  # Copy goodies to the cache
+  cp -r $build_dir/.heroku $cache_dir/lwan
 
 else
   info "Using cached lwan $lwan_version..."
