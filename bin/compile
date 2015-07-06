@@ -99,7 +99,7 @@ if ! test -d $cache_dir/lwan || ! test -f $cache_dir/lwan/.heroku/lwan-version |
   head "CMAKE Configuring"
   cmake -DCMAKE_BUILD_TYPE=Release | indent
   head "Compiling with Make"
-  make VERBOSE=1 | indent
+  make 2>&1 | indent
   head "Moving generated binary"
   mkdir -p "$bin_dir/bin"
   mv lwan/lwan "$bin_dir/bin"
