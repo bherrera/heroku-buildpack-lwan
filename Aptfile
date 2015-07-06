@@ -1,5 +1,1 @@
 cmake
-liblua5.1-0-dev
-zlib1g-dev
-libsqlite3-dev
-libmysql++-dev
