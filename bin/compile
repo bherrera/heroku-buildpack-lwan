@@ -92,10 +92,8 @@ if ! test -d $cache_dir/lwan || ! test -f $cache_dir/lwan/.heroku/lwan-version |
 
   cd "$build_dir"
   info "Downloading lwan $lwan_version..."
-  git clone $lwan_url $lwan_src_dir
+  git clone $lwan_url $lwan_src_dir 2>&1 | indent
   cd $lwan_src_dir
-  #mkdir -p $lwan_src_dir
-  #cd $lwan_src_dir
 
   head "Compiling lwan..."
   head "CMAKE Configuring"
@@ -104,7 +102,7 @@ if ! test -d $cache_dir/lwan || ! test -f $cache_dir/lwan/.heroku/lwan-version |
   make 2>&1 | indent
   head "Moving generated binary"
   mkdir -p "$bin_dir/bin"
-  mv "lwan" "$bin_dir/bin"
+  mv $lwan_src_dir/lwan/lwan "$bin_dir/bin"
 
   info "lwan was Installed at: $bin_dir"
 
@@ -123,27 +121,27 @@ else
 fi
 
 # build a startup script
-#echo -n "-----> Creating startup script... "
-#mkdir "$build_dir/bin"
-#cat <<EOF >"$build_dir/bin/start_lwan"
-##!/usr/bin/env bash
+echo -n "-----> Creating startup script... "
+mkdir "$build_dir/bin"
+cat <<EOF >"$build_dir/bin/start_lwan"
+#!/usr/bin/env bash
 #erb conf/lwan.conf.erb > conf/lwan.conf
 #mkdir -p logs
 #touch logs/access.log logs/error.log
 #(tail -qF -n 0 --pid=\$\$ logs/*.log &)
-#exec lwan -p .
-#EOF
-#chmod +x "$build_dir/bin/start_lwan"
-#echo "done"
+exec lwan
+EOF
+chmod +x "$build_dir/bin/start_lwan"
+echo "done"
 
-#if [[ ! -f $build_dir/Procfile ]]; then
-#  echo -n "-----> Creating Procfile... "
-#  echo "web: bin/start_lwan" > $build_dir/Procfile
-#  chmod +x "$build_dir/Procfile"
-#  echo "done"
-#fi
+if [[ ! -f $build_dir/Procfile ]]; then
+  echo -n "-----> Creating Procfile... "
+  echo "web: bin/start_lwan" > $build_dir/Procfile
+  chmod +x "$build_dir/Procfile"
+  echo "done"
+fi
 
 # Update the PATH
-#info "Building runtime environment"
-#mkdir -p $build_dir/.profile.d
-#echo "export PATH=\"\$HOME/vendor/lwan/bin:\$PATH\";" > $build_dir/.profile.d/lwan.sh
+info "Building runtime environment"
+mkdir -p $build_dir/.profile.d
+echo "export PATH=\"\$HOME/vendor/lwan/bin:\$PATH\";" > $build_dir/.profile.d/lwan.sh
