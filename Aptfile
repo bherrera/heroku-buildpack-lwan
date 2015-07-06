@@ -1,2 +1,6 @@
-lua
-make
+cmake
+zlib1g-dev
+pkg-config
+lua5.1-dev
+libsqlite3-dev
+libmysql++-dev
