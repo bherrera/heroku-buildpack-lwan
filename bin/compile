@@ -102,7 +102,7 @@ if ! test -d $cache_dir/lwan || ! test -f $cache_dir/lwan/.heroku/lwan-version |
   make 2>&1 | indent
   head "Moving generated binary"
   mkdir -p "$bin_dir/bin"
-  mv $lwan_src_dir/lwan/lwan "$bin_dir/bin"
+  mv lwan/lwan "$bin_dir/bin"
 
   info "lwan was Installed at: $bin_dir"
 
