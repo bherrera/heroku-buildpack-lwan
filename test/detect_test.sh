@@ -4,14 +4,14 @@
 
 testDetectWithConfFileDetectsLwanApp() {
   mkdir -p ${BUILD_DIR}/conf
-  touch ${BUILD_DIR}/conf/lwan.conf
+  touch ${BUILD_DIR}/conf/lwan.conf.erb
   detect
 
-  assertAppDetected "Lwan!"
+  assertAppDetected "Lwan"
 }
 
 testDetectWithDirDoesNotDetectsLwanApp() {
-  mkdir -p ${BUILD_DIR}/conf/lwan.conf
+  mkdir -p ${BUILD_DIR}/conf/lwan.conf.erb
   detect
 
   assertNoAppDetected

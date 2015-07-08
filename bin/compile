@@ -31,10 +31,6 @@ if [ -f $build_dir/_lwan.cfg ]; then
   source $build_dir/_lwan.cfg
 fi
 
-if [ -f $build_dir/_lwan_lua.cfg ]; then
-  source $build_dir/_lwan_lua.cfg
-fi
-
 if [ $LWAN_VERSION ] && [ ! $lwan_version ]; then
   lwan_version=$LWAN_VERSION
 fi
@@ -134,6 +130,10 @@ echo -n "-----> Creating startup script... "
 mkdir "$build_dir/bin"
 cat <<EOF >"$build_dir/bin/start_lwan"
 #!/usr/bin/env bash
+erb conf/lwan.conf.erb > conf/lwan.conf
+mkdir -p logs
+touch logs/access.log logs/error.log
+(tail -qF -n 0 --pid=\$\$ logs/*.log &)
 exec lwan conf/lwan.conf
 EOF
 chmod +x "$build_dir/bin/start_lwan"
