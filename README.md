@@ -2,7 +2,7 @@ Heroku buildpack: lwan
 =======================
 
 This is a [Heroku buildpack](http://devcenter.heroku.com/articles/buildpack) for lwan.
-The lwan is build using the source form [lwan.ws](lwan.ws).
+The lwan is build using the source form [lwan.ws](http://lwan.ws).
 Built binary is cached to speedup future builds.
 
 Usage
@@ -18,7 +18,7 @@ Example usage:
     index.html
 
     $ heroku create --buildpack https://github.com/bherrera/heroku-buildpack-lwan
-    $ heroku buildpacks:add --index 1 https://github.com/ddollar/heroku-buildpack-apt
+    $ heroku buildpacks:add --index 1 [https://github.com/ddollar/heroku-buildpack-apt](https://github.com/ddollar/heroku-buildpack-apt)
     ...
 
     $ git push heroku master
