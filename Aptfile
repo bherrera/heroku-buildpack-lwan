@@ -1,2 +1,2 @@
 cmake
-luajit
+libluajit-5.1-dev
