@@ -2,7 +2,7 @@ Heroku buildpack: lwan
 =======================
 
 This is a [Heroku buildpack](http://devcenter.heroku.com/articles/buildpack) for lwan.
-The lwan is build using the source form (lwan.ws).
+The lwan is build using the source form [lwan.ws](lwan.ws).
 Built binary is cached to speedup future builds.
 
 Usage
@@ -17,7 +17,7 @@ Example usage:
     wwwroot:
     index.html
 
-    $ heroku create --buildpack https://github.com/bherrera/heroku-buildpack-lwan.git
+    $ heroku create --buildpack https://github.com/bherrera/heroku-buildpack-lwan
     $ heroku buildpacks:add --index 1 https://github.com/ddollar/heroku-buildpack-apt
     ...
 
@@ -206,6 +206,11 @@ work correctly.
 
 To start the server run `bin/start_lwan`.
 If no `Procfile` is present buildpack will create one with `web: bin/start_lwan`
+
+
+Example
+-------
+Check out this app [lwan-test-app](https://github.com/bherrera/lwan-test-app)
 
 Hacking
 -------
