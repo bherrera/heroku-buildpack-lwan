@@ -31,6 +31,10 @@ if [ -f $build_dir/_lwan.cfg ]; then
   source $build_dir/_lwan.cfg
 fi
 
+if [ -f $build_dir/_lwan_lua.cfg ]; then
+  source $build_dir/_lwan_lua.cfg
+fi
+
 if [ $LWAN_VERSION ] && [ ! $lwan_version ]; then
   lwan_version=$LWAN_VERSION
 fi
@@ -97,7 +101,10 @@ if ! test -d $cache_dir/lwan || ! test -f $cache_dir/lwan/.heroku/lwan-version |
 
   head "Compiling lwan..."
   head "CMAKE Configuring"
-  cmake -DCMAKE_BUILD_TYPE=Release | indent
+
+  #We must no rely on pkg-config for Lua (using luajit see Aptfile)
+  cmake -DCMAKE_BUILD_TYPE=Release -DLUA_INCLUDE_DIRS=~/.apt/usr/include/$LUA_INC_DIR/ | indent
+
   head "Compiling with Make"
   make 2>&1 | indent
   head "Moving generated binary"
