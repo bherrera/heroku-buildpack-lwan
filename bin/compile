@@ -134,11 +134,7 @@ echo -n "-----> Creating startup script... "
 mkdir "$build_dir/bin"
 cat <<EOF >"$build_dir/bin/start_lwan"
 #!/usr/bin/env bash
-#erb conf/lwan.conf.erb > conf/lwan.conf
-#mkdir -p logs
-#touch logs/access.log logs/error.log
-#(tail -qF -n 0 --pid=\$\$ logs/*.log &)
-exec lwan --config conf/lwan.conf
+exec lwan conf/lwan.conf
 EOF
 chmod +x "$build_dir/bin/start_lwan"
 echo "done"
